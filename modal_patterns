@@ -1,0 +1,21 @@
+import pandas as pd
+import spacy
+import re as re
+nlp = spacy.load('en_core_web_trf')
+nlp.max_length = 150000000000000
+
+
+def remove_tags(string):
+    result = re.sub('<[^<]+?>', '', string)
+    return result
+
+
+icle = []
+meta = pd.read_csv('F:/learner Corpora/metadata_with_text.csv')
+text = pd.read_csv('F:/Learner Corpora/text_only.csv')
+text['text_field'] = text['text_field'].apply(lambda ch : remove_tags(ch))
+
+
+meta_x = meta.to_dict('records')
+text_only = text['text_field'].values.tolist()
+icle = list(zip(text_only, meta_x))
