@@ -6,6 +6,9 @@ import math
 import re as re
 nlp = spacy.load('en_core_web_trf') ###note that trf model requires GPU, or else you can import en_core_web_lg model###
 nlp.max_length = 150000000000000
+nlp.create_pipe('merge_noun_chunks')
+nlp.add_pipe('merge_noun_chunks') ### this part is not really necessary. However it provides better outcomes since rathen lemma alone it provides Noun Phrases i.e.
+                                        consider when nsubj, dobj or pobj is actually noun phrase than noun ('Brother vs My little brother') ###
 
 ###simple re to clean html tags from corpus data###
 def remove_tags(string):
@@ -65,12 +68,13 @@ relative_pron_list = ['which', 'what', 'who', 'that', " "]
 pos_list = ['SPACE', 'X', 'SCON'] ### data is not always clean and not all sentences are perfectly accurate. This is the black list to eliminate sentences with NULL input.
 
 for doc, context in nlp.pipe(icle, as_tuples =True): ###Initial loop for parsing sentences with double object dative 'I gave him some money'###
-      for d in doc:
-          if d.dep_ == "dative" and d.pos_ != 'ADP' and d.head.pos_ == "VERB" and d.lemma_ not in relative_pron_list:
-              for n in d.head.children:
-                       if n.dep_ == "nsubj" and n.pos_ != 'SPACE' and n.lemma_ not in relative_pron_list:
-                          for x in d.head.children:
-                               if x.dep_ == "dobj" and x.pos_ != 'SPACE' and x.lemma_ not in relative_pron_list:
+    doc._.trf_data = None ### this may be required if you have 'CUDA out of memory' issue ###    
+    for d in doc:
+         if d.dep_ == "dative" and d.pos_ != 'ADP' and d.head.pos_ == "VERB" and d.lemma_ not in relative_pron_list:
+             for n in d.head.children:
+                 if n.dep_ == "nsubj" and n.pos_ != 'SPACE' and n.lemma_ not in relative_pron_list:
+                     for x in d.head.children:
+                          if x.dep_ == "dobj" and x.pos_ != 'SPACE' and x.lemma_ not in relative_pron_list:
                                     
                                         dative.append(d.text)
                                         dative_pos.append(d.pos_)
@@ -86,6 +90,7 @@ for doc, context in nlp.pipe(icle, as_tuples =True): ###Initial loop for parsing
                                         doc_id.append(context['docid_field'])
                                         
 for doc, context in nlp.pipe(icle, as_tuples =True): ###Second loop for parsing double object sentences ' I gave some money to him'###
+    doc._.trf_data = None ### this may be required if you have 'CUDA out of memory' issue ###   
     for b in doc:
         if b.dep_ == "dative" and b.pos_ == "ADP" and b.head.pos_ == "VERB":
             for m in b.head.children:
