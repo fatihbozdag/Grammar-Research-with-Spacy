@@ -1,19 +1,18 @@
-###First import all the packages
+### This is the code for my accepted paper titled 'Probabilistic Analysis of English Dative Constructions in Academic Writings of English EFL Learners' 
+(January 2024 - Theory and Practice of Second Language Acquisition))###
 
 import pandas as pd
 import spacy
 import math
-import re as re
-nlp = spacy.load('en_core_web_trf') ###note that trf model requires GPU, or else you can import en_core_web_lg model###
+import re
+spacy.require_gpu() ### you can skip if you do not want GPU acceleration ###
+pattern = r'ICLE\-\w+\-\w+\-\d+\.\d+'
+nlp = spacy.load('en_core_web_trf')
 nlp.max_length = 150000000000000
 nlp.create_pipe('merge_noun_chunks')
 nlp.add_pipe('merge_noun_chunks') ### this part is not really necessary. However it provides better outcomes since rathen lemma alone it provides Noun Phrases i.e.
                                         consider when nsubj, dobj or pobj is actually noun phrase than noun ('Brother vs My little brother') ###
 
-###simple re to clean html tags from corpus data###
-def remove_tags(string):
-    result = re.sub('<[^<]+?>', '', string)
-    return result
     
 ###Create list from csv files and merge them as list of list for spacy parsing with metadata
 
@@ -22,7 +21,8 @@ icle = []
 meta = pd.read_csv('F:/learner Corpora/metadata_with_text.csv') #icle corpus metada files from local computer
 text = pd.read_csv('F:/Learner Corpora/text_only.csv') #icle corpus text files from local computer
 
-text['text_field'] = text['text_field'].apply(lambda ch : remove_tags(ch)) #remove html link included in the corpus text files
+### For my studies, I commonly use ICLE corpus, and raw texts include metadata embedded in HTML tags. Follow pattern is for removing them ###
+text['text_field'] = text['text_field'].apply(lambda x: re.sub(pattern, '', x).replace('\n', ''))
 
 ###this is required for spacy_tuples to get context data from metadata. Or else you can simply proceed with Pandas Data Frame.###
 meta_x = meta.to_dict('records')
