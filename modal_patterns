@@ -1,21 +1,224 @@
-import pandas as pd
+### This is the code for the upcoming paper title 'Pragmatic and Syntactic Influences in English Modal Verb Preferences of EFL Learners' ###
+
 import spacy
-import re as re
+import spacy_transformers
 nlp = spacy.load('en_core_web_trf')
-nlp.max_length = 150000000000000
+nlp.max_length = 10000000000000
+spacy.require_gpu() ### you can skip if you do not want GPU acceleration ###
+import pandas as pd
+import re
+pattern = r'ICLE\-\w+\-\w+\-\d+\.\d+'
 
-
-def remove_tags(string):
-    result = re.sub('<[^<]+?>', '', string)
-    return result
-
-
+##Create Pandas DataFrame with Metadata and Texts. This part is required if you'd like integrate metadata into your analysis via nlp.pipe###
 icle = []
 meta = pd.read_csv('F:/learner Corpora/metadata_with_text.csv')
 text = pd.read_csv('F:/Learner Corpora/text_only.csv')
-text['text_field'] = text['text_field'].apply(lambda ch : remove_tags(ch))
+### For my studies, I commonly use ICLE corpus, and raw texts include metadata embedded in HTML tags. Follow pattern is for removing them ###
+text['text_field'] = text['text_field'].apply(lambda x: re.sub(pattern, '', x).replace('\n', ''))
 
 
 meta_x = meta.to_dict('records')
 text_only = text['text_field'].values.tolist()
 icle = list(zip(text_only, meta_x))
+
+
+#### 
+These are modal grammatical patterns based on Mindt(1995) 
+Pattern 1 (Modal + Vinf): Subject + Modal (Present and Past forms) + Verb (bare infinitive) – Active Voice, Unmarked Aspect 
+Pattern 2 (Modal + be + Vpp): Subject + Modal (Present and Past forms)  + be + Verb (past participle) – Passive Voice, Unmarked Aspect
+Pattern 3 (Modal + have + Vpp): Subject + Modal (Present and Past forms) + have + Verb (past participle) – Active Voice- Perfect Aspect
+Pattern 4 (Modal + be + Ving): Subject + Modal (Present and Past forms) + be + Verb (progressive) – Active Voice, Progressive Aspect
+Pattern 5 (Modal + have + been + Vpp): Subject + Modal (Present and Past forms) + have + been + Verb(past participle) – Passive Voice, Perfect Aspect
+###
+
+modal_pattern1 = []
+modal_pattern1_nsubj = []
+modal_pattern1_nsubj_pos = []
+modal_pattern1_modal = []
+modal_pattern1_verb = []
+modal_pattern1_doc_id = []
+
+for doc, context in nlp.pipe(icle, as_tuples =True):
+    for a in doc:
+        if a.dep_ == 'aux' and a.tag_ == 'MD' and a.head.tag_ == 'VB':
+            for b in a.head.children:
+                if b.dep_ == 'nsubj':
+                    modal_pattern1.append(a.sent)
+                    modal_pattern1_nsubj.append(b.text)
+                    modal_pattern1_nsubj_pos.append(b.pos_)
+                    modal_pattern1_modal.append(a.text)
+                    modal_pattern1_verb.append(a.head.text)
+                    modal_pattern1_doc_id.append(context['docid_field'])
+                   
+pattern1 = pd.DataFrame({'Docid_field': modal_pattern1_doc_id, 'Subject': modal_pattern1_nsubj, 
+                         'Subject_Pos': modal_pattern1_nsubj_pos, 'Modal': modal_pattern1_modal, 
+                         'Verb': modal_pattern1_verb, 'Sent': modal_pattern1})
+                         
+modal_pattern2 = []
+modal_pattern2_nsubj = []
+modal_pattern2_nsubj_pos = []
+modal_pattern2_modal = []
+modal_pattern2_verb = []
+modal_pattern2_doc_id = []                            
+
+for doc, context in nlp.pipe(icle, as_tuples =True):
+    for a in doc:
+        if a.dep_ == 'aux' and a.tag_ == 'MD' and a.head.tag_ == 'VBG':
+            for b in a.head.children:
+                if b.dep_ == 'nsubj':
+                    
+                    modal_pattern2.append(a.sent)
+                    modal_pattern2_nsubj.append(b.text)
+                    modal_pattern2_nsubj_pos.append(b.pos_)
+                    modal_pattern2_modal.append(a.text)
+                    modal_pattern2_verb.append(a.head.text)
+                    modal_pattern2_doc_id.append(context['docid_field'])
+                    
+                    
+pattern2 = pd.DataFrame({'Docid_field': modal_pattern2_doc_id, 'Subject': modal_pattern2_nsubj, 
+                         'Subject_Pos': modal_pattern2_nsubj_pos, 'Modal': modal_pattern2_modal, 
+                         'Verb': modal_pattern2_verb, 'Sent': modal_pattern2})
+modal_pattern3 = []
+modal_pattern3_nsubj = []
+modal_pattern3_nsubj_pos = []
+modal_pattern3_modal = []
+modal_pattern3_verb = []
+modal_pattern3_doc_id = []
+
+
+for doc, context in nlp.pipe(icle, as_tuples =True):
+    for a in doc:
+        if a.dep_ == 'aux' and a.tag_ == 'MD' and a.head.tag_ == 'VBN':
+            for b in a.head.children:
+                if b.dep_ == 'nsubj':
+                    
+                       
+                    modal_pattern3.append(a.sent)
+                    modal_pattern3_nsubj.append(b.text)
+                    modal_pattern3_nsubj_pos.append(b.pos_)
+                    modal_pattern3_modal.append(a.text)
+                    modal_pattern3_verb.append(a.head.text)
+                    modal_pattern3_doc_id.append(context['docid_field'])
+                    
+pattern3 = pd.DataFrame({'Docid_field': modal_pattern3_doc_id, 'Subject': modal_pattern3_nsubj, 
+                         'Subject_Pos': modal_pattern3_nsubj_pos, 'Modal': modal_pattern3_modal, 
+                         'Verb': modal_pattern3_verb, 'Sent': modal_pattern3})
+modal_pattern4 = []
+modal_pattern4_nsubj = []
+modal_pattern4_nsubj_pos = []
+modal_pattern4_modal = []
+modal_pattern4_verb = []
+modal_pattern4_doc_id = []
+
+
+for doc, context in nlp.pipe(icle, as_tuples =True):
+    for a in doc:
+        if a.dep_ == 'ROOT' and a.tag_ == 'VBN':
+            for b in a.children:
+                if b.dep_ == 'aux' and b.tag_ == 'MD':
+                    for c in a.children:
+                        if c.dep_ == 'auxpass' and c.tag_ == 'VB':
+                            for d in a.children:
+                                if d.dep_ == 'nsubjpass':
+                                    
+                                    modal_pattern4.append(a.sent)
+                                    modal_pattern4_nsubj.append(d.text)
+                                    modal_pattern4_nsubj_pos.append(d.pos_)
+                                    modal_pattern4_modal.append(b.text)
+                                    modal_pattern4_verb.append(a.text)
+                                    modal_pattern4_doc_id.append(context['docid_field'])
+                                    
+pattern4 = pd.DataFrame({'Docid_field': modal_pattern4_doc_id, 'Subject': modal_pattern4_nsubj, 
+                         'Subject_Pos': modal_pattern4_nsubj_pos, 'Modal': modal_pattern4_modal, 
+                         'Verb': modal_pattern4_verb, 'Sent': modal_pattern4})
+modal_pattern5_nsubj = []
+modal_pattern5_nsubj_pos = []
+modal_pattern5_modal = []
+modal_pattern5_verb = []
+modal_pattern5_doc_id = []
+
+for doc, context in nlp.pipe(icle, as_tuples =True):
+    for a in doc:
+        if a.dep_ == 'ROOT' and a.tag_ == 'VBN':
+            for b in a.children:
+                if b.dep_ == 'aux' and b.tag_ == 'MD':
+                    for c in a.children:
+                        if c.dep_ == 'auxpass' and c.tag_ == 'VBN':
+                            for d in a.children:
+                                if d.dep_ == 'nsubjpass':
+                                    
+                                    modal_pattern5.append(a.sent)
+                                    modal_pattern5_nsubj.append(d.text)
+                                    modal_pattern5_nsubj_pos.append(d.pos_)
+                                    modal_pattern5_modal.append(b.text)
+                                    modal_pattern5_verb.append(a.text)    
+                                    modal_pattern5_doc_id.append(context['Docid_field'])
+
+pattern5 = pd.DataFrame({'Docid_field': modal_pattern5_doc_id, 'Subject': modal_pattern5_nsubj, 
+                         'Subject_Pos': modal_pattern5_nsubj_pos, 'Modal': modal_pattern5_modal, 
+                         'Verb': modal_pattern5_verb, 'Sent': modal_pattern5})
+                         
+                         
+#### This section explains regression analysis via PyMC4, Bambi and Arviz.
+Note than following the previous analysis, All data was manually tagged for Semantic Classes of Verbs and Semantic Classes of Modals 
+based on Biber et al.(1999) and essays whose titles include the keyword 'abortion' were subset into another dataframe####
+
+import arviz as az
+import bambi as bmb
+import matplotlib.pyplot as plt
+
+plt.show(block=True)
+plt.interactive(False)
+import numpy as np
+import pandas as pd
+import seaborn as sns
+import pymc as pm
+import pymc.sampling_jax
+import numpyro
+import pickle
+
+from matplotlib.lines import Line2D
+
+print(f"Running on PyMC v{pm._version_}")
+
+patterns = pd.read_csv('allpatterns.csv', encoding='utf-8') ### make sure you import your own csv file###
+
+common_prior = bmb.Prior("Normal", mu=0, sigma = 1)
+priors = {"Subject_Pos": common_prior, "Native_language": common_prior, "Modal_C":common_prior,"Verb_C":common_prior, "Pattern_Type": common_prior}
+
+patterns_model = bmb.Model("Modal_C~ 0 + Subject_Pos + Verb_C + Pattern_Type + (1|Native_language)",
+                           data=patterns, categorical=["Modal_C", "Verb_C", "Pattern_Type"], family="categorical", auto_scale=True,priors = priors)
+patterns_model.build()
+
+patterns_model_graph = patterns_model.graph(fmt="png", formatting="plain_with_params", name="patterns_graph")
+
+with patterns_model.backend.model:
+    patterns_idata = pm.sampling_jax.sample_numpyro_nuts(draws=1000, tune=250, target_accept=.99,
+                                                         postprocessing_backend='cpu',
+                                                         idata_kwargs={"log_likelihood": True}, chain_method='parallel')
+    posterior_predictive = pm.sample_posterior_predictive(trace=patterns_idata, extend_inferencedata=True)
+    
+
+abortion = pd.read_csv("abortion_pattern.csv") ### make sure you import your own csv file###
+
+
+common_prior = bmb.Prior("Normal", mu=0, sigma = 1)
+priors = {"Subject_Pos": common_prior, "Native_language": common_prior, "Modal_C":common_prior,"Verb_C":common_prior, "Pattern_Type": common_prior}
+
+abortion_model = bmb.Model("Modal_C~ 0 + Subject_Pos + Verb_C + Pattern_Type + (1|Native_language)",
+                           data=abortion, categorical=["Modal_C", "Verb_C", "Pattern_Type"], family="categorical", auto_scale=True, priors = priors)
+
+abortion_model.build()
+
+with abortion_model.backend.model:
+    abortion_idata = pm.sampling_jax.sample_numpyro_nuts(draws=1000, tune=250, target_accept=.99,
+                                                         postprocessing_backend='cpu',
+                                                         idata_kwargs={"log_likelihood": True}, chain_method='parallel')
+    posterior_predictive = pm.sample_posterior_predictive(trace=abortion_idata, extend_inferencedata=True)
+    
+### I'd have used Pareto-smoothed importance sampling leave-one-out cross-validation (PSIS-LOO-CV) for model performance (Vehtari et al., 2015)###
+
+loo_abortion = az.loo(abortion, pointwise = True).pareto_k
+loo_patterns = az.loo(patterns, pointwise = True).pareto_k
+az.plot_khat(loo_abortion, show_bins=True)
+az.plot_khat(loo_patterns, show_bins = True)
