@@ -5,122 +5,186 @@ import pandas as pd
 import spacy
 import math
 import re
-spacy.require_gpu() ### you can skip if you do not want GPU acceleration ###
-pattern = r'ICLE\-\w+\-\w+\-\d+\.\d+'
-nlp = spacy.load('en_core_web_trf')
-nlp.max_length = 150000000000000
-nlp.create_pipe('merge_noun_chunks')
-nlp.add_pipe('merge_noun_chunks') ### this part is not really necessary. However it provides better outcomes since rathen lemma alone it provides Noun Phrases i.e.
-                                        consider when nsubj, dobj or pobj is actually noun phrase than noun ('Brother vs My little brother') ###
 
+def load_data():
+    # Load metadata and text files, preprocess and return as list of tuples
+    # Add your own file paths here
+    meta = pd.read_csv('F:/learner Corpora/metadata_with_text.csv')
+    text = pd.read_csv('F:/Learner Corpora/text_only.csv')
     
-###Create list from csv files and merge them as list of list for spacy parsing with metadata
+    text['text_field'] = text['text_field'].apply(lambda x: re.sub(pattern, '', x).replace('\n', ''))
+    meta_x = meta.to_dict('records')
+    text_only = text['text_field'].values.tolist()
+    icle = list(zip(text_only, meta_x))
+    
+    return icle
+    
+def setup_spacy():
+    # Setup Spacy with required settings and return the instance
+    spacy.require_gpu()
+    pattern = r'ICLE\-\w+\-\w+\-\d+\.\d+'
+    nlp = spacy.load('en_core_web_trf')
+    nlp.max_length = 150000000000000
+    nlp.create_pipe('merge_noun_chunks')
+    nlp.add_pipe('merge_noun_chunks')
+    
+    return nlp
 
-### Note that ICLE International Corpus of Learner English is copyrighted data, so I cannot share it ###
-icle = [] 
-meta = pd.read_csv('F:/learner Corpora/metadata_with_text.csv') #icle corpus metada files from local computer
-text = pd.read_csv('F:/Learner Corpora/text_only.csv') #icle corpus text files from local computer
+def is_valid_token(token, relative_pron_list, pos_list):
+    return token.pos_ not in pos_list and token.lemma_ not in relative_pron_list
 
-### For my studies, I commonly use ICLE corpus, and raw texts include metadata embedded in HTML tags. Follow pattern is for removing them ###
-text['text_field'] = text['text_field'].apply(lambda x: re.sub(pattern, '', x).replace('\n', ''))
+def process_double_object_dative(docs_with_context, results):
+    # Process and extract information for double object dative constructions
+    
+    relative_pron_list = ['which', 'what', 'who', 'that', " "]
+    pos_list = ['SPACE', 'X', 'SCON']
+    
+    dative_sentences = []
+    native_language = []
+    doc_id = []
+    nsubj = []
+    nsubj_pos = []
+    root = []
+    dative = []
+    dative_pos = []
+    direct_obj = []
+    direct_obj_pos = []
+    length_dative = []
+    length_direct_obj = []
 
-###this is required for spacy_tuples to get context data from metadata. Or else you can simply proceed with Pandas Data Frame.###
-meta_x = meta.to_dict('records')
-text_only = text['text_field'].values.tolist()
-icle = list(zip(text_only, meta_x))
+    for doc, context in docs_with_context:
+        doc._.trf_data = None
+        for d in doc:
+            if d.dep_ == "dative" and d.pos_ != 'ADP' and d.head.pos_ == "VERB" and is_valid_token(d, relative_pron_list, pos_list):
+                for n in d.head.children:
+                    if n.dep_ == "nsubj" and is_valid_token(n, relative_pron_list, pos_list):
+                        for x in d.head.children:
+                            if x.dep_ == "dobj" and is_valid_token(x, relative_pron_list, pos_list):
 
-### I created list for each item since for further statistical analysis included regression analysis ####
+                                dative.append(d.text)
+                                dative_pos.append(d.pos_)
+                                length_dative.append(math.log10(len(d.text)))
+                                root.append(d.head.lemma_)
+                                nsubj.append(n.text)
+                                nsubj_pos.append(n.pos_)
+                                direct_obj.append(x.text)
+                                direct_obj_pos.append(x.pos_)
+                                length_direct_obj.append(math.log10(len(x.text)))
+                                dative_sentences.append(d.sent)
+                                native_language.append(context['Native_language'])
+                                doc_id.append(context['docid_field'])
 
-dative_sents = []
-nsubj = []
-nsubj_pos = []
-root = []
-root_pos = []
-dative = []
-dative_pos = []
-direct_obj = []
-direct_obj_pos = []
-pre_obj = []
-pre_obj_pos = []
-sents = []
-nsubj_pre = []
-nsubj_pre_pos = []
-root_pre = []
-root_pre_pos = []
-dative_pre = []
-dative_pre_pos = []
-direct_obj_pre = []
-direct_obj_pre_pos = []
-sent_pre = []
-dative_sentences_pre = []
-dative_sentences = []
-native_language = []
-native_language_pre = []
-length_direct_obj = []
-length_dative = []
-length_pre_obj = []
-length_pre_direct_obj = []
-doc_id = []
-doc_id_pre = []
+    results["dative_sentences"] = dative_sentences
+    results["native_language"] = native_language
+    results["doc_id"] = doc_id
+    results["nsubj"] = nsubj
+    results["nsubj_pos"] = nsubj_pos
+    results["root"] = root
+    results["dative"] = dative
+    results["dative_pos"] = dative_pos
+    results["direct_obj"] = direct_obj
+    results["direct_obj_pos"] = direct_obj_pos
+    results["length_dative"] = length_dative
+    results["length_direct_obj"] = length_direct_obj
+    
+results = pd.DataFrame({
+        'dative_sentences': dative_sentences_pre,
+        'native_language': native_language_pre,
+        'doc_id': doc_id_pre,
+        'nsubj': nsubj_pre,
+        'nsubj_pos': nsubj_pre_pos,
+        'root': root_pre,
+        'dative': dative_pre,
+        'dative_pos': dative_pre_pos,
+        'direct_obj': direct_obj_pre,
+        'direct_obj_pos': direct_obj_pre_pos,
+        'length_dative': length_pre_obj,
+        'length_direct_obj': length_pre_direct_obj,
+        'construction_type': 'prepositional'  # Add a column to specify the construction type
+    })
 
-### In some cases, spacy tags relative/adverbial clauses as pobj/dobj, this is a black to prevent Spacy incorrect parsing ###
-relative_pron_list = ['which', 'what', 'who', 'that', " "]
-pos_list = ['SPACE', 'X', 'SCON'] ### data is not always clean and not all sentences are perfectly accurate. This is the black list to eliminate sentences with NULL input.
+    return results
 
-for doc, context in nlp.pipe(icle, as_tuples =True): ###Initial loop for parsing sentences with double object dative 'I gave him some money'###
-    doc._.trf_data = None ### this may be required if you have 'CUDA out of memory' issue ###    
-    for d in doc:
-         if d.dep_ == "dative" and d.pos_ != 'ADP' and d.head.pos_ == "VERB" and d.lemma_ not in relative_pron_list:
-             for n in d.head.children:
-                 if n.dep_ == "nsubj" and n.pos_ != 'SPACE' and n.lemma_ not in relative_pron_list:
-                     for x in d.head.children:
-                          if x.dep_ == "dobj" and x.pos_ != 'SPACE' and x.lemma_ not in relative_pron_list:
-                                    
-                                        dative.append(d.text)
-                                        dative_pos.append(d.pos_)
-                                        length_dative.append(math.log10(len(d.text))) ### log-lenght in character of the dative/recipient###
-                                        root.append(d.head.lemma_)
-                                        nsubj.append(n.text)
-                                        nsubj_pos.append(n.pos_)
-                                        direct_obj.append(x.text)
-                                        direct_obj_pos.append(x.pos_)
-                                        length_direct_obj.append(math.log10(len(x.text))) ### log-length in character of theme###
-                                        dative_sentences.append(d.sent)
-                                        native_language.append(context['Native_language'])
-                                        doc_id.append(context['docid_field'])
+def process_prepositional_dative(docs_with_context):
+    # Process and extract information for prepositional dative constructions
+    
+    relative_pron_list = ['which', 'what', 'who', 'that', " "]
+    pos_list = ['SPACE', 'X', 'SCON']
+    
+    dative_sentences_pre = []
+    native_language_pre = []
+    doc_id_pre = []
+    nsubj_pre = []
+    nsubj_pre_pos = []
+    root_pre = []
+    dative_pre = []
+    dative_pre_pos = []
+    direct_obj_pre = []
+    direct_obj_pre_pos = []
+    pre_obj = []
+    pre_obj_pos = []
+    length_pre_obj = []
+    length_pre_direct_obj = []
+
+    for doc, context in docs_with_context:
+        doc._.trf_data = None
+        for b in doc:
+            if b.dep_ == "dative" and b.pos_ == "ADP" and b.head.pos_ == "VERB" and is_valid_token(b, relative_pron_list, pos_list):
+                for m in b.head.children:
+                    if m.dep_ == "nsubj" and is_valid_token(m, relative_pron_list, pos_list):
+                        for k in b.head.children:
+                            if k.dep_ == "dobj" and is_valid_token(k, relative_pron_list, pos_list):
+                                for l in b.children:
+                                    if l.dep_ == "pobj" and is_valid_token(l, relative_pron_list, pos_list):
                                         
-for doc, context in nlp.pipe(icle, as_tuples =True): ###Second loop for parsing double object sentences ' I gave some money to him'###
-    doc._.trf_data = None ### this may be required if you have 'CUDA out of memory' issue ###   
-    for b in doc:
-        if b.dep_ == "dative" and b.pos_ == "ADP" and b.head.pos_ == "VERB":
-            for m in b.head.children:
-                if m.dep_ == "nsubj" and m.pos_ != 'SPACE' and m.lemma_ not in relative_pron_list:
-                    for k in b.head.children:
-                        if k.dep_ == "dobj" and k.pos_ != 'SPACE' and k.lemma_ not in relative_pron_list:
-                         for l in b.children:
-                            if l.dep_ == "pobj" and l.pos_ != 'SPACE' and l.lemma_ not in relative_pron_list:
-                                    
-                                        dative_pre.append(b.text)
-                                        dative_pre_pos.append(b.pos_)
-                                        root_pre.append(b.head.lemma_)
-                                        nsubj_pre.append(m.text)
-                                        nsubj_pre_pos.append(m.pos_)
-                                        direct_obj_pre.append(k.text)
-                                        direct_obj_pre_pos.append(k.pos_)
-                                        length_pre_direct_obj.append(math.log10(len(k.text))) ### log-length in character of theme###
-                                        pre_obj.append(l.text)
-                                        pre_obj_pos.append(l.pos_)
-                                        length_pre_obj.append(math.log10(len(l.text))) ### log-lenght in character of the dative/recipient###
                                         dative_sentences_pre.append(b.sent)
                                         native_language_pre.append(context['Native_language'])
                                         doc_id_pre.append(context['docid_field'])
-                                        
-dative_without_pre = pd.DataFrame({"Native_Language": native_language, 
-                                          "Doc_id": doc_id, "Nsubj" : nsubj, "Agent_Pos": nsubj_pos, "Verb" : root,
-                                          "Recipient" : dative, "Recipient_Pos" : dative_pos,"Recipient_length": length_dative, 
-                                           "Theme" :  direct_obj, "Theme_Pos": direct_obj_pos, "Theme_length": length_direct_obj, "Dative_Sentences" : dative_sentences})
-                                           
-dative_with_pre = pd.DataFrame({"Native_Language": native_language_pre,
-                                            "Doc_id": doc_id_pre, "Agent" : nsubj_pre, "Agent_Pos": nsubj_pre_pos, "Verb" : root_pre, 
-                                             "Theme" : direct_obj_pre, "Theme_Pos": direct_obj_pre_pos, "Theme_length": length_pre_direct_obj, 
-                                             "Dative" : dative_pre, "Recipient": pre_obj, "Recipient_Pos": pre_obj_pos,"Recipient_length": length_pre_obj, "Dative_Sentences" : dative_sentences_pre})
+                                        nsubj_pre.append(m.text)
+                                        nsubj_pre_pos.append(m.pos_)
+                                        root_pre.append(b.head.lemma_)
+                                        dative_pre.append(b.text)
+                                        dative_pre_pos.append(b.pos_)
+                                        direct_obj_pre.append(k.text)
+                                        direct_obj_pre_pos.append(k.pos_)
+                                        length_pre_direct_obj.append(math.log10(len(k.text)))
+                                        pre_obj.append(l.text)
+                                        pre_obj_pos.append(l.pos_)
+                                        length_pre_obj.append(math.log10(len(l.text)))
+
+    results = pd.DataFrame({
+        'dative_sentences': dative_sentences_pre,
+        'native_language': native_language_pre,
+        'doc_id': doc_id_pre,
+        'nsubj': nsubj_pre,
+        'nsubj_pos': nsubj_pre_pos,
+        'root': root_pre,
+        'dative': dative_pre,
+        'dative_pos': dative_pre_pos,
+        'direct_obj': direct_obj_pre,
+        'direct_obj_pos': direct_obj_pre_pos,
+        'length_dative': length_pre_obj,
+        'length_direct_obj': length_pre_direct_obj,
+        'construction_type': 'prepositional'  # Add a column to specify the construction type
+    })
+
+    return results
+
+
+def main():
+    icle_data = load_data()
+    nlp = setup_spacy()
+    docs_with_context = list(nlp.pipe(icle_data, as_tuples=True))
+    
+    results_double_object_dative = process_double_object_dative(docs_with_context)
+    results_prepositional_dative = process_prepositional_dative(docs_with_context)
+    
+    # Combine the DataFrames
+    combined_results = pd.concat([results_double_object_dative, results_prepositional_dative], ignore_index=True)
+    
+    # Save, analyze or display the combined DataFrame as needed
+    print(combined_results)
+
+if __name__ == "__main__":
+    main()
+
