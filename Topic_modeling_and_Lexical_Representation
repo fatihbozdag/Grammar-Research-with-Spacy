@@ -1,1 +1,207 @@
+## First Import Necessary Packages
+from bertopic import BERTopic
+from bertopic.representation import KeyBERTInspired
+from bertopic.representation import MaximalMarginalRelevance
+from umap import UMAP
+from hdbscan import HDBSCAN
+from bertopic.vectorizers import ClassTfidfTransformer
+from keybert import KeyBERT
+from sentence_transformers import SentenceTransformer
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.feature_extraction import _stop_words
+import pandas as pd
+import re
+import torch
+torch.device("mps")
+import spacy
+import os
+nlp = spacy.load('en_core_web_trf',disable=['ner', 'parser'])
+spacy.require_gpu()
+nlp.max_length = 10000000000000
+pattern = r'ICLE\-\w+\-\w+\-\d+\.\d+'
+pattern_ = r'[^\w\s]'
 
+### Next step is required if you want ChatGPT to provide represetations for your terms. Also note that you need an OpenAI account.
+import os
+import openai
+import chardet
+openai.organization = "your_OPENai_Organization" 
+openai.api_key = ("your_OPENai_API_Key")
+from bertopic.representation import OpenAI
+
+###Next clean texts and utilize Spacy for lemmatisation task.
+df = pd.read_csv("your_data_here") ### Since ICLE corpus is copyrighted I cannot share the full dataset.
+df['text_field'] = df['text_field'].apply(lambda x: re.sub(pattern, '', x).replace('\n', ''))
+df = df.rename(columns={'Native language': 'Native_Language'})
+df['text_field'] = df['text_field'].apply(lambda x: re.sub(pattern, '', x).replace('\n', ''))
+
+###Next step removes stop words and lemmatize whole corpus
+
+df['lemmatized_text'] = df['text_field'].apply(lambda x: ' '.join([token.lemma_ for token in nlp(x) if not token.is_stop]))
+docs = df['lemmatized_text']
+
+# Step 1 - /Users/t embeddings
+embedding_model = SentenceTransformer('all-MiniLM-L12-v2')
+
+# Step 2 - Reduce dimensionality
+umap_model = UMAP(n_neighbors=15, n_components=5, min_dist=0.0, metric='cosine', random_state=123)
+### Note that due to scholastics nature of umap method, without defining a random_state, each run would provide different results.
+### Hence, for my study, random_state = 123, for those who wish to test and replicate the study with the same data.
+
+# Step 3 - Cluster reduced embeddings
+hdbscan_model = HDBSCAN(min_cluster_size=30, metric='euclidean', cluster_selection_method='eom', prediction_data=True)
+
+# Step 4 - Tokenize topics
+vectorizer_model = CountVectorizer(stop_words="english")
+
+# Step 5 - Create topic representation
+ctfidf_model = ClassTfidfTransformer()
+
+# Step 6 - (Optional) Fine-tune topic representations with 
+# a `OpenAI's ChatGPT` model
+representation_model = OpenAI()
+
+topic_model = BERTopic(
+  embedding_model=embedding_model,          # Step 1 - Extract embeddings
+  umap_model=umap_model,                    # Step 2 - Reduce dimensionality
+  hdbscan_model=hdbscan_model,              # Step 3 - Cluster reduced embeddings
+  ctfidf_model=ctfidf_model,                # Step 5 - Extract topic words
+  representation_model=representation_model,# Step 6 - (Optional) Fine-tune topic representations
+  calculate_probabilities=True,verbose=True, nr_topics = 'auto', top_n_words = 10, min_topic_size  = 30)
+  
+topics, probs = topic_model.fit_transform(docs)
+topic_info = topic_model.get_topic_info()
+topic_info = topic_info[topic_info['Topic'] != -1] ### this removes outliner documents
+
+#Next step is to calculate entropy score
+import numpy as np
+doc_topic_matrix = np.array(probs)
+normalized_doc_topic_matrix = doc_topic_matrix / doc_topic_matrix.sum(axis=1, keepdims=True)
+# Calculate topic entropy
+topic_entropy = (-normalized_doc_topic_matrix * np.log2(normalized_doc_topic_matrix)).sum(axis=0)
+# Create a DataFrame with topic entropy values
+entropy_df = pd.DataFrame({'Topic': range(len(topic_entropy)), 'Entropy': topic_entropy})
+# Sort the DataFrame by entropy in descending order
+sorted_entropy_df = entropy_df.sort_values('Entropy', ascending=False)
+sorted_entropy_df
+
+# Merge Topic Freqs with Entropy DataFrame Display the sorted.
+topic_info = topic_info.merge(sorted_entropy_df, on='Topic')
+
+### Visualize the top 10 terms in Topic 0 
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+topic_freq = topic_model.get_topic_freq()
+topic_words = [topic_model.get_topic(topic) for topic in topic_freq['Topic']]
+# Select the desired topic
+desired_topic = 0
+
+# Filter the topic_words list for the desired topic
+filtered_topic_words = [topic_model.get_topic(desired_topic)]
+
+# Create a DataFrame with the filtered data
+topic_df = pd.DataFrame(filtered_topic_words[0], columns=['Word', 'c-TF-IDF'])
+
+# Create a bar plot to visualize the words and their c-TF-IDF scores
+sns.set(style="whitegrid", font = 'Times New Roman')
+plt.figure(figsize=(10, 6))
+sns.barplot(x='c-TF-IDF', y='Word', data=topic_df, palette='viridis')
+plt.title(f'Terms with Higher c-TF-IDF scores for Topic {desired_topic}')
+plt.xlabel('c-TF-IDF Score')
+plt.ylabel('Terms')
+plt.show()
+
+
+### Visualize all topics with their frequencies and entropy scores
+
+# Set plot style and size
+sns.set(style="whitegrid", font = 'Times New Roman')
+plt.figure(figsize=(20, 12))
+
+# Create a bar plot for the 'Count' column
+bar_plot = sns.barplot(x="CustomName", y="Count", data=topic_info, color="b", alpha=0.6)
+
+# Set the x-axis and y-axis labels with increased font size for the x-axis label
+bar_plot.set_xlabel("Custom Term Labels", fontsize=14)
+bar_plot.set_ylabel("Frequency")
+
+# Rotate x-axis labels for better readability and increase font size
+bar_plot.set_xticklabels(bar_plot.get_xticklabels(), rotation=90, fontsize=12)
+
+# Create a line plot for the 'Entropy' column with a secondary y-axis
+entropy_plot = bar_plot.twinx()
+sns.lineplot(x="CustomName", y="Entropy", data=topic_info, color="r", marker="o", linestyle="-", ax=entropy_plot)
+
+# Set the y-axis label for the line plot
+entropy_plot.set_ylabel("Entropy Scores")
+
+# Find the label with the highest entropy
+highest_entropy_label = topic_info.loc[topic_info['Entropy'].idxmax()]
+
+# Annotate the label with the highest entropy
+bar_plot.annotate('Highest entropy', xy=(highest_entropy_label["CustomName"], highest_entropy_label["Count"]),
+                  xytext=(highest_entropy_label["CustomName"], highest_entropy_label["Count"]+0.05*topic_info["Count"].max()),
+                  arrowprops=dict(facecolor='black', shrink=0.05),
+                  fontsize=12, color='black', rotation=90)
+
+# Set the title for the plot
+
+
+# Show the plot
+plt.show()
+#### The end of Topic Modeling. Next is to train Gensin Word2Vec model over the essays sharing Topic 0
+
+from pprint import pprint
+from sklearn.neighbors import KNeighborsRegressor
+from sklearn.feature_extraction import _stop_words
+from gensim.models import word2vec
+from gensim.utils import simple_preprocess
+from gensim.utils import simple_preprocess
+from gensim.models import Word2Vec
+
+documents = pd.read_csv('your_topic_modeling_results_file')
+documents.loc[documents['Topic']== 0, 'Topic'] = 'Common_Topic'
+documents.loc[documents['Topic']!= 'Common_Topic', 'Topic'] = 'Other_Topics'
+topic_counts = documents['Topic'].groupby(documents['Native_Language']).value_counts(sort = True)
+
+### Train model
+
+def train_word2vec(common_topics, lemmatized_text_column, target_words):
+    # Preprocess the text data in the lemmatized_text column
+    common_topics["preprocessed_text"] = common_topics['lemmatized_text'].apply(lambda x: simple_preprocess(x))
+
+    # Train the Word2Vec model on the preprocessed text
+    model = Word2Vec(common_topics["preprocessed_text"].tolist(), vector_size=300, window=10, min_count=20,
+                     workers=10, sg = 1, hs = 1, negative = 1, ns_exponent = 1, epochs = 50)
+
+    related_words_dict = {}
+
+    # Find related words for each target word
+    for word in target_words:
+        if word in model.wv.key_to_index:
+            related_words = model.wv.most_similar(word, topn=10)
+            related_words_dict[word] = related_words
+        else:
+            related_words_dict[word] = None
+
+    return related_words_dict
+
+# Assuming you already have a dataframe called common_topics with a column 'lemmatized_text'
+# If not, you can create a sample dataframe as follows:
+# common_topics = pd.DataFrame({"lemmatized_text": ["text1", "text2", "text3"]})
+
+# Define the target words
+target_words = ["student", "degree", "university", "education", "college"] ### In my case these are the words contributing to Topic 0
+
+# Call the function
+related_words = train_word2vec(common_topics, "lemmatized_text", target_words)
+
+# Print the related words for each target word
+for word, related in related_words.items():
+    if related:
+        print(f"\nRelated words for '{word}':")
+        for related_word, similarity in related:
+            print(f"{related_word}: {similarity:.4f}")
+    else:
+        print(f"\n'{word}' not found in the vocabulary.")
