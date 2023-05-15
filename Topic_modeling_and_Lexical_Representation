@@ -44,7 +44,7 @@ docs = df['lemmatized_text']
 embedding_model = SentenceTransformer('all-MiniLM-L12-v2')
 
 # Step 2 - Reduce dimensionality
-umap_model = UMAP(n_neighbors=15, n_components=5, min_dist=0.0, metric='cosine', random_state=123)
+umap_model = UMAP(n_neighbors=20, n_components=5, min_dist=0.0, metric='cosine', random_state=123)
 ### Note that due to scholastics nature of umap method, without defining a random_state, each run would provide different results.
 ### Hence, for my study, random_state = 123, for those who wish to test and replicate the study with the same data.
 
