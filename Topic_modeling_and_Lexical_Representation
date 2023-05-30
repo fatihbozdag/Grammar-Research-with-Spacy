@@ -150,7 +150,7 @@ bar_plot.annotate('Highest entropy', xy=(highest_entropy_label["CustomName"], hi
 
 # Show the plot
 plt.show()
-#### The end of Topic Modeling. Next is to train Gensin Word2Vec model over the essays sharing Topic 0
+### The end of Topic Modeling. Next is to train Gensin Word2Vec model over the essays sharing Topic 0 ###
 
 from pprint import pprint
 from sklearn.neighbors import KNeighborsRegressor
@@ -165,15 +165,23 @@ documents.loc[documents['Topic']== 0, 'Topic'] = 'Common_Topic'
 documents.loc[documents['Topic']!= 'Common_Topic', 'Topic'] = 'Other_Topics'
 topic_counts = documents['Topic'].groupby(documents['Native_Language']).value_counts(sort = True)
 
-### Train model
+### setseed ###
+def hash(astring):
+  return ord(astring[30]) 
+  
+  ### A note of caution! Gensim results are randomized, so it is necessary to set seed.###
+  ###However, as I was not aware that 'workers' parameter should have been set to 1 for non-randomness, the results may slightly vary###
+  
+  
+### Train model ###
 
 def train_word2vec(common_topics, lemmatized_text_column, target_words):
     # Preprocess the text data in the lemmatized_text column
     common_topics["preprocessed_text"] = common_topics['lemmatized_text'].apply(lambda x: simple_preprocess(x))
 
     # Train the Word2Vec model on the preprocessed text
-    model = Word2Vec(common_topics["preprocessed_text"].tolist(), vector_size=300, window=10, min_count=20,
-                     workers=10, sg = 1, hs = 1, negative = 1, ns_exponent = 1, epochs = 50)
+    model = Word2Vec(common_topics["preprocessed_text"].tolist(), vector_size=500, window=10, min_count=100,
+                     workers=10, sg = 0, hs = 1, negative = 20, ns_exponent = 0.75, epochs = 50, sample=1e-5,alpha=0.03,hashfxn=hash)
 
     related_words_dict = {}
 
@@ -192,7 +200,7 @@ def train_word2vec(common_topics, lemmatized_text_column, target_words):
 # common_topics = pd.DataFrame({"lemmatized_text": ["text1", "text2", "text3"]})
 
 # Define the target words
-target_words = ["student", "degree", "university", "education", "college"] ### In my case these are the words contributing to Topic 0
+target_words = ["academic", "education", "university", "graduate", "college"]
 
 # Call the function
 related_words = train_word2vec(common_topics, "lemmatized_text", target_words)
@@ -205,3 +213,60 @@ for word, related in related_words.items():
             print(f"{related_word}: {similarity:.4f}")
     else:
         print(f"\n'{word}' not found in the vocabulary.")
+
+### Visualize Results in a Semantic Map ###
+
+def plot_semantic_map_connected(related_words_dict, threshold=0.5):
+    G = nx.Graph()
+
+    # Add target words as nodes
+    for word in related_words_dict.keys():
+        G.add_node(word, color="red")
+
+    # Add related words as nodes and edges with weights based on similarity
+    for word, related in related_words_dict.items():
+        for related_word, similarity in related:
+            # If related_word is not in the graph, add it with color blue
+            if not G.has_node(related_word):  
+                G.add_node(related_word, color="lightblue")
+            # If related_word is in the graph but its color is not yellow (it's not a target word), 
+            # change its color to blue
+            elif G.nodes[related_word]["color"] != "red":
+                G.nodes[related_word]["color"] = "lightblue"
+            G.add_edge(word, related_word, weight=similarity)
+    
+    # Set up the plot
+    plt.figure(figsize=(25, 15))
+
+    # Compute node positions using the Kamada-Kawai layout algorithm
+    pos = nx.kamada_kawai_layout(G, scale=2.5, )
+
+    # Set node sizes and colors
+    node_sizes = [3000 if node[1]["color"] == "red" else 1000 for node in G.nodes(data=True)]
+    node_colors = [node[1]["color"] for node in G.nodes(data=True)]  # directly use node color
+
+    # Draw nodes and labels
+    nx.draw_networkx_nodes(G, pos, node_color=node_colors, alpha=0.6, node_size=node_sizes)
+    nx.draw_networkx_labels(G, pos, font_size=14, font_weight="bold", font_family="sans-serif")
+
+    # Draw edges with varying color based on the similarity score
+    for (u, v, d) in G.edges(data=True):
+        if d['weight'] > 0.7:
+            edge_color = 'black'
+        elif d['weight'] > 0.5:
+            edge_color = 'green'
+        else:
+            edge_color = 'red'
+        nx.draw_networkx_edges(G, pos, edgelist=[(u, v)], width=d["weight"] * 2, edge_color=edge_color, style = 'dashed')
+
+    # Add edge labels with weight scores rounded to 2 decimal places
+    edge_labels = {(u, v): '{:.2f}'.format(d["weight"]) for u, v, d in G.edges(data=True)}
+    nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels, font_color='red')
+
+    # Display the plot
+    plt.axis("off")
+    plt.show()
+
+# Call the function to plot the connected semantic map
+plot_semantic_map_connected(related_words, threshold=0.9)
+
