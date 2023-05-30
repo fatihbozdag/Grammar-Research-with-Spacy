@@ -167,7 +167,7 @@ topic_counts = documents['Topic'].groupby(documents['Native_Language']).value_co
 
 ### setseed ###
 def hash(astring):
-  return ord(astring[30]) 
+  return ord(astring[71]) 
   
   ### A note of caution! Gensim results are randomized, so it is necessary to set seed.###
   ###However, as I was not aware that 'workers' parameter should have been set to 1 for non-randomness, the results may slightly vary###
