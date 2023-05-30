@@ -171,6 +171,66 @@ def hash(astring):
   
   ### A note of caution! Gensim results are randomized, so it is necessary to set seed.###
   ###However, as I was not aware that 'workers' parameter should have been set to 1 for non-randomness, the results may slightly vary###
+  ### Our results are as follows; 
+Related words for 'academic':
+background: 0.7666
+achieve: 0.7601
+professional: 0.7572
+market: 0.7565
+unemployment: 0.7442
+argue: 0.7357
+qualification: 0.7139
+demand: 0.7091
+general: 0.6999
+base: 0.6768
+
+Related words for 'education':
+continue: 0.8206
+public: 0.8113
+exist: 0.7899
+rich: 0.7625
+poor: 0.7441
+private: 0.7397
+equal: 0.7304
+rate: 0.7285
+afford: 0.7230
+receive: 0.7221
+
+Related words for 'university':
+unfortunately: 0.7310
+degree: 0.7270
+graduation: 0.7104
+field: 0.7103
+major: 0.6973
+useless: 0.6969
+value: 0.6932
+preparation: 0.6568
+reality: 0.6360
+employment: 0.6353
+
+Related words for 'graduate':
+qualification: 0.8626
+employer: 0.8495
+employ: 0.8368
+graduation: 0.8299
+employment: 0.8297
+employee: 0.8124
+unemployment: 0.8099
+qualified: 0.8053
+position: 0.7758
+market: 0.7729
+
+Related words for 'college':
+succeed: 0.8101
+choice: 0.6463
+right: 0.6356
+success: 0.6338
+enter: 0.6049
+attend: 0.5974
+employment: 0.5855
+qualified: 0.5627
+graduate: 0.5260
+level: 0.5200 ####
   
   
 ### Train model ###
