@@ -167,11 +167,12 @@ topic_counts = documents['Topic'].groupby(documents['Native_Language']).value_co
 
 ### setseed ###
 def hash(astring):
-  return ord(astring[71]) 
+  return ord(astring[123]) 
   
   ### A note of caution! Gensim results are randomized, so it is necessary to set seed.###
-  ###However, as I was not aware that 'workers' parameter should have been set to 1 for non-randomness, the results may slightly vary###
+  ###However, as I was not aware that 'workers' parameter should have been set to 1 for non-randomness, the order of associated words may slightly vary.
   ### Our results are as follows; 
+  
 Related words for 'academic':
 background: 0.7666
 achieve: 0.7601
