@@ -1,0 +1,61 @@
+from frame_semantic_transformer import FrameSemanticTransformer
+frame_transformer = FrameSemanticTransformer()
+import torch
+torch.device("mps")
+import pandas as pd
+import spacy
+nlp = spacy.load("en_core_web_trf")
+
+df = pd.read_csv()
+
+### you dataframe is supposed have columns including 'sent' and 'lemma' ### 
+
+def find_lemma_index(sentence, lemma):
+    # Process the sentence with spaCy
+    doc = nlp(sentence)
+    
+    # Iterate through the tokens and find the index of the lemma
+    for token in doc:
+        if token.lemma_ == lemma:
+            return token.idx  # Return the character offset of the token
+    
+    return -1  # Return -1 if the lemma is not found
+
+# Get the sentences and lemmas
+sentences = df['sent'].tolist()
+lemmas = df['lemma'].tolist()
+
+# Create a list of sentences to analyze
+bulk_sentences = sentences
+
+# Analyze the sentences with the frame_transformer
+results = frame_transformer.detect_frames_bulk(bulk_sentences)
+
+# Import json to serialize the frame elements
+import json
+
+# Create a new column for frame elements
+df['frame_elements'] = None
+
+# Iterate through the results
+for index, result in enumerate(results):
+    lemma = lemmas[index]
+    lemma_index = find_lemma_index(sentences[index], lemma)
+
+    frames_for_lemma = []
+    frame_elements_for_lemma = {}
+
+    # Iterate through the frames in the result
+    for frame in result.frames:
+        if lemma_index == frame.trigger_location:
+            frames_for_lemma.append(frame.name)
+            # Iterate through the frame elements for the matching frame
+            for element in frame.frame_elements:
+                frame_elements_for_lemma[element.name] = element.text
+
+    # Serialize frame elements as JSON
+    frame_elements_str = json.dumps(frame_elements_for_lemma)
+
+    # Add frames and frame elements to the DataFrame
+    df.at[index, 'frames'] = ', '.join(frames_for_lemma)
+    df.at[index, 'frame_elements'] = frame_elements_str
