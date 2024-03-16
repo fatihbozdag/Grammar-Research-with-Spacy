@@ -127,30 +127,72 @@ from matplotlib.lines import Line2D
 
 print(f"Running on PyMC v{pm._version_}")
 
-patterns = pd.read_csv('allpatterns.csv', encoding='utf-8') ### make sure you import your own csv file###
+all_data = pd.read_csv('all_data.csv', encoding='utf-8') ### make sure you import your own csv file###
+
+common_prior = bmb.Prior("Normal", mu = 0, sigma = 1)
+priors = {"Subject_Pos": common_prior, "Pattern_Type": common_prior, "Modal_C": common_prior, 
+          "Verb_C": common_prior, "Native_language": common_prior}
+
+main_model = bmb.Model("Modal_C ~ 0 + Subject_Pos + Pattern_Type + Verb_C + (1|Native_language)",
+                  data = all_data, family = "categorical",
+                  auto_scale = True, priors = priors, categorical = ["Modal_C", "Verb_C", "Pattern_Type"])
+main_model.build()
+
+with main_model.backend.model:
+    idata=pm.sampling_jax.sample_numpyro_nuts(draws= 2500, tune = 100, target_accept = .99, postprocessing_backend = 'gpu')
+    posterior_predictive = pm.sample_posterior_predictive(trace = main_model_idata, extend_inferencedata=True)
+
+abortion_data = pd.read_csv('abortion_patterns.csv')
 
 common_prior = bmb.Prior("Normal", mu=0, sigma = 1)
 priors = {"Subject_Pos": common_prior, "Native_language": common_prior, "Modal_C":common_prior,"Verb_C":common_prior, "Pattern_Type": common_prior}
 
-patterns_model = bmb.Model("Frequency ~ Subject_Pos + Native_language + Modal_C + Verb_C + Pattern_Type", data=patterns, priors=priors)
+abortion_model = bmb.Model("Modal_C~ 0 + Subject_Pos + Verb_C + Pattern_Type + (1|Native_language)",
+                           data=abortion_data, categorical=["Modal_C", "Verb_C", "Pattern_Type"], family="categorical", auto_scale=True, priors = priors)
 
-results = patterns_model.fit(
-    target_accept=0.95,
-    draws=2000,
-    tune=1000,
-    return_inferencedata=True,
+abortion_model.build()
+
+with model.backend.model:
+    abortion_idata=pm.sampling_jax.sample_numpyro_nuts(draws= 2500, tune = 100, target_accept = .99, postprocessing_backend = 'gpu')
+    posterior_predictive = pm.sample_posterior_predictive(trace = abortion_idata, extend_inferencedata=True)
+
+
+loo_abortion = az.loo(abortion_idata, pointwise = True).pareto_k
+loo_patterns = az.loo(main_model_idata, pointwise = True).pareto_k
+
+
+axes = az.plot_density(
+    [main_model, abortion_model], 
+    data_labels=["Complete Dataset", "Abortion Dataset"],
+    var_names=["1|Native_language"], 
+    hdi_prob=0.89,
+    colors=["cornflowerblue", "sandybrown"],
+    point_estimate="median", 
+    shade=0.6, 
+    grid=(2, 2)
 )
 
-az.plot_trace(results)
-plt.show()
+# Add titles to each subplot for clarity
+axes[0, 0].set_title('Panel (a): Chinese Subcorpus, per/pos/abi modals')
+axes[0, 1].set_title('Panel (b): Chinese Subcorpus, vol/pre modals')
+axes[1, 0].set_title('Panel (c): Turkish Subcorpus, per/pos/abi modals')
+axes[1, 1].set_title('Panel (d): Turkish Subcorpus, vol/pre modals')
 
-az.summary(results, round_to=2)
+fig = axes.flatten()[0].get_figure()
+fig.align_labels()
 
-# Save the model
-with open("patterns_model.pkl", "wb") as f:
-    pickle.dump(patterns_model, f)
+# Refined labels for the axes based on the context of KDE plots and your data
+x_label = "Point Estimate (Median)"
+y_label = "Density"
 
-# Load the model
-with open("patterns_model.pkl", "rb") as f:
-    loaded_patterns_model = pickle.load(f)
+# Assigning the refined labels to each subplot in the 2x2 grid
+for ax in axes.flatten():
+    ax.set_xlabel(x_label)
+    ax.set_ylabel(y_label)
+
+# Consider revising the figure supertitle and caption to more accurately describe the plots and data being represented
+fig.text(0.5, 0.02, "Distribution of estimated influence of native language on modal semantic classes in Chinese and Turkish subcorpora, visualized through kernel density estimation.", ha="center", va="center", wrap=True)
+
+# The figure supertitle and caption provided above are suggestions; you should adjust them to fit the exact details and findings of your study.
+
 
