@@ -5,8 +5,8 @@ import re
 from typing import List, Tuple
 
 def load_data() -> Tuple[pd.DataFrame, pd.DataFrame]:
-    meta = pd.read_csv('F:/learner Corpora/metadata_with_text.csv')
-    text = pd.read_csv('F:/Learner Corpora/text_only.csv')
+    meta = pd.read_csv('ICLE.csv')
+    text = pd.read_csv('ICLE_text_only.csv')
 
     pattern = r'ICLE\-\w+\-\w+\-\d+\.\d+'
     text['text_field'] = text['text_field'].apply(lambda x: re.sub(pattern, '', x).replace('\n', ''))
