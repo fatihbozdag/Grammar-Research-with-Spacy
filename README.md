@@ -30,7 +30,9 @@ I am a researcher working on NLP/Corpus studies, particularly exploring grammar 
 - Processes bulk text data efficiently
 
 ### 🔗 [Topic Modeling and Lexical Representation](./topic-modeling-lexical-representation/)
-**BERTopic and Word2Vec Analysis of Learner English Topics**
+**Cognitive Patterns in Learner Texts: Exploring Semantic and Semiotic Dimensions Through Topic Modeling**
+- **Published:** IGI Global Scientific Publishing (2025)
+- **DOI:** https://doi.org/10.4018/979-8-3693-8146-5.ch011
 - Combines BERTopic for topic discovery with Word2Vec for lexical analysis
 - Optional ChatGPT integration for topic representation
 - Creates semantic networks and entropy analysis

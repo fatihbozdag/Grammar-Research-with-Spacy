@@ -62,6 +62,35 @@ Bozdağ, F. Ü., Morris, G., & Mo, J. (2024). A Bayesian probabilistic analysis 
 ### Full Article
 📖 **Available at:** https://pmc.ncbi.nlm.nih.gov/articles/PMC11002062/
 
+---
+
+### Topic Modeling and Lexical Representation
+
+If you use the topic modeling and lexical representation analysis code in your research, please cite the following book chapter:
+
+**Bozdağ, F. Ü. (2025). Cognitive Patterns in Learner Texts: Exploring Semantic and Semiotic Dimensions Through Topic Modeling. In H. Cangır, K. Uzun, T. Can, & E. Oğuz (Eds.), *Exploration of the Intersection of Corpus Linguistics and Language Science* (pp. 253-278). IGI Global Scientific Publishing. https://doi.org/10.4018/979-8-3693-8146-5.ch011**
+
+### BibTeX Format
+```bibtex
+@incollection{bozdag2025cognitive,
+  title={Cognitive Patterns in Learner Texts: Exploring Semantic and Semiotic Dimensions Through Topic Modeling},
+  author={Bozdağ, Fatih Ünal},
+  booktitle={Exploration of the Intersection of Corpus Linguistics and Language Science},
+  editor={Cangır, Hakan and Uzun, Kürşad and Can, Tuğba and Oğuz, Emrah},
+  pages={253--278},
+  year={2025},
+  publisher={IGI Global Scientific Publishing},
+  doi={10.4018/979-8-3693-8146-5.ch011},
+  url={https://www.igi-global.com/gateway/chapter/370696}
+}
+```
+
+### APA Format
+Bozdağ, F. Ü. (2025). Cognitive Patterns in Learner Texts: Exploring Semantic and Semiotic Dimensions Through Topic Modeling. In H. Cangır, K. Uzun, T. Can, & E. Oğuz (Eds.), *Exploration of the Intersection of Corpus Linguistics and Language Science* (pp. 253-278). IGI Global Scientific Publishing. https://doi.org/10.4018/979-8-3693-8146-5.ch011
+
+### Full Chapter
+📖 **Available at:** https://www.igi-global.com/gateway/chapter/370696
+
 ## Repository Citation
 
 If you use this repository or any of its tools, please also cite:

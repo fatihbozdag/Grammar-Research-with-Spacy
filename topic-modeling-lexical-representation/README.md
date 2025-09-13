@@ -3,6 +3,13 @@
 ## Overview
 This project combines BERTopic for automatic topic modeling with Word2Vec for lexical representation analysis. It provides a comprehensive pipeline for discovering topics in learner English corpora and analyzing semantic relationships between words within specific topics.
 
+## Research Context
+This code corresponds to the published book chapter:
+
+**Bozdağ, F. Ü. (2025). Cognitive Patterns in Learner Texts: Exploring Semantic and Semiotic Dimensions Through Topic Modeling. In H. Cangır, K. Uzun, T. Can, & E. Oğuz (Eds.), *Exploration of the Intersection of Corpus Linguistics and Language Science* (pp. 253-278). IGI Global Scientific Publishing. https://doi.org/10.4018/979-8-3693-8146-5.ch011**
+
+📖 **Full chapter available at:** https://www.igi-global.com/gateway/chapter/370696
+
 ## Features
 - **BERTopic Integration**: Advanced topic modeling using transformer embeddings
 - **ChatGPT Topic Representation**: Optional fine-tuning of topic labels using OpenAI's ChatGPT
