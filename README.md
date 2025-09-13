@@ -18,6 +18,8 @@ I am a researcher working on NLP/Corpus studies, particularly exploring grammar 
 ### 🔗 [Modal Patterns Analysis](./modal-patterns-analysis/)
 **Bayesian Analysis of Modal Verb Patterns in Learner English**
 - Extracts five different modal verb construction patterns
+- **Published:** *Heliyon*, 10(7):e28701 (2024)
+- **DOI:** https://doi.org/10.1016/j.heliyon.2024.e28701
 - Uses Bayesian statistical modeling with Bambi and PyMC
 - Includes cross-linguistic comparison analysis
 

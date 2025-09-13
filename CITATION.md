@@ -1,6 +1,8 @@
 # Citation Information
 
-## Dative Alternation Analysis
+## Published Research Papers
+
+### Dative Alternation Analysis
 
 If you use the dative alternation analysis code in your research, please cite the following paper:
 
@@ -27,6 +29,38 @@ Bozdağ, F. Ünal. (2024). Probabilistic Analysis of English Dative Construction
 
 ### Full Article
 📖 **Available at:** https://journals.us.edu.pl/index.php/TAPSLA/article/view/13902
+
+---
+
+### Modal Patterns Analysis
+
+If you use the modal patterns analysis code in your research, please cite the following paper:
+
+**Bozdağ FÜ, Morris G, Mo J. A Bayesian probabilistic analysis of the use of English modal verbs in L2 writing: Focusing on L1 influence and topic effects. *Heliyon*. 2024 Mar 27;10(7):e28701. doi: 10.1016/j.heliyon.2024.e28701. PMID: 38596125; PMCID: PMC11002062.**
+
+### BibTeX Format
+```bibtex
+@article{bozdag2024bayesian,
+  title={A Bayesian probabilistic analysis of the use of English modal verbs in L2 writing: Focusing on L1 influence and topic effects},
+  author={Bozdağ, Fatih Ünal and Morris, Gareth and Mo, Junhua},
+  journal={Heliyon},
+  volume={10},
+  number={7},
+  pages={e28701},
+  year={2024},
+  publisher={Elsevier},
+  doi={10.1016/j.heliyon.2024.e28701},
+  pmid={38596125},
+  pmcid={PMC11002062},
+  url={https://pmc.ncbi.nlm.nih.gov/articles/PMC11002062/}
+}
+```
+
+### APA Format
+Bozdağ, F. Ü., Morris, G., & Mo, J. (2024). A Bayesian probabilistic analysis of the use of English modal verbs in L2 writing: Focusing on L1 influence and topic effects. *Heliyon*, *10*(7), e28701. https://doi.org/10.1016/j.heliyon.2024.e28701
+
+### Full Article
+📖 **Available at:** https://pmc.ncbi.nlm.nih.gov/articles/PMC11002062/
 
 ## Repository Citation
 

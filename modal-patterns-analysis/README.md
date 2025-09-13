@@ -3,6 +3,13 @@
 ## Overview
 This project analyzes modal verb patterns in learner English corpora using spaCy for linguistic annotation and Bayesian statistical modeling with Bambi for probabilistic analysis.
 
+## Research Context
+This code corresponds to the published paper:
+
+**Bozdağ FÜ, Morris G, Mo J. A Bayesian probabilistic analysis of the use of English modal verbs in L2 writing: Focusing on L1 influence and topic effects. *Heliyon*. 2024 Mar 27;10(7):e28701. doi: 10.1016/j.heliyon.2024.e28701. PMID: 38596125; PMCID: PMC11002062.**
+
+📖 **Full article available at:** https://pmc.ncbi.nlm.nih.gov/articles/PMC11002062/
+
 ## Features
 - **Five Modal Pattern Types**: 
   - Pattern 1: Modal + Base Verb (e.g., "can go")
