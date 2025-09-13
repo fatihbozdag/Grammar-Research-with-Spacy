@@ -33,7 +33,7 @@ def setup_spacy():
 def is_valid_token(token, relative_pron_list, pos_list):
     return token.pos_ not in pos_list and token.lemma_ not in relative_pron_list
 
-def process_double_object_dative(docs_with_context, results):
+def process_double_object_dative(docs_with_context):
     # Process and extract information for double object dative constructions
     
     relative_pron_list = ['which', 'what', 'who', 'that', " "]
@@ -74,35 +74,21 @@ def process_double_object_dative(docs_with_context, results):
                                 native_language.append(context['Native_language'])
                                 doc_id.append(context['docid_field'])
 
-    results["dative_sentences"] = dative_sentences
-    results["native_language"] = native_language
-    results["doc_id"] = doc_id
-    results["nsubj"] = nsubj
-    results["nsubj_pos"] = nsubj_pos
-    results["root"] = root
-    results["dative"] = dative
-    results["dative_pos"] = dative_pos
-    results["direct_obj"] = direct_obj
-    results["direct_obj_pos"] = direct_obj_pos
-    results["length_dative"] = length_dative
-    results["length_direct_obj"] = length_direct_obj
-    
-results = pd.DataFrame({
-        'dative_sentences': dative_sentences_pre,
-        'native_language': native_language_pre,
-        'doc_id': doc_id_pre,
-        'nsubj': nsubj_pre,
-        'nsubj_pos': nsubj_pre_pos,
-        'root': root_pre,
-        'dative': dative_pre,
-        'dative_pos': dative_pre_pos,
-        'direct_obj': direct_obj_pre,
-        'direct_obj_pos': direct_obj_pre_pos,
-        'length_dative': length_pre_obj,
-        'length_direct_obj': length_pre_direct_obj,
-        'construction_type': 'prepositional'  # Add a column to specify the construction type
+    results = pd.DataFrame({
+        'dative_sentences': dative_sentences,
+        'native_language': native_language,
+        'doc_id': doc_id,
+        'nsubj': nsubj,
+        'nsubj_pos': nsubj_pos,
+        'root': root,
+        'dative': dative,
+        'dative_pos': dative_pos,
+        'direct_obj': direct_obj,
+        'direct_obj_pos': direct_obj_pos,
+        'length_dative': length_dative,
+        'length_direct_obj': length_direct_obj,
+        'construction_type': 'double_object'
     })
-
     return results
 
 def process_prepositional_dative(docs_with_context):
@@ -163,9 +149,11 @@ def process_prepositional_dative(docs_with_context):
         'dative_pos': dative_pre_pos,
         'direct_obj': direct_obj_pre,
         'direct_obj_pos': direct_obj_pre_pos,
+        'pre_obj': pre_obj,
+        'pre_obj_pos': pre_obj_pos,
         'length_dative': length_pre_obj,
         'length_direct_obj': length_pre_direct_obj,
-        'construction_type': 'prepositional'  # Add a column to specify the construction type
+        'construction_type': 'prepositional'
     })
 
     return results

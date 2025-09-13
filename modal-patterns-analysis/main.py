@@ -20,6 +20,7 @@ def process_texts(meta: pd.DataFrame, text: pd.DataFrame) -> List[Tuple[str, dic
 
 def process_modal_pattern(meta_text: List[Tuple[str, dict]], pattern_function) -> pd.DataFrame:
     modal_pattern = []
+    nlp = spacy.load('en_core_web_trf')
 
     for doc, context in nlp.pipe(meta_text, as_tuples=True):
         modal_pattern.extend(pattern_function(doc, context))
@@ -41,14 +42,20 @@ def pattern1_function(doc, context):
                     results.append(result)
     return results
     
- def pattern2_function(doc, context):
-   results = []
-   for token in doc:
-       if token.dep_ == "aux" and token.tag_ == "MD" and token.head.tag_ == "VBG":
-           for child in token.head.children:
-               if child.dep_ == "nsubj":
-                   results.append((context["docid_field"], child.text, child.pos_, token.text, token.head.text, token.sent))
-   return results
+def pattern2_function(doc, context):
+    results = []
+    for token in doc:
+        if token.dep_ == "aux" and token.tag_ == "MD" and token.head.tag_ == "VBG":
+            for child in token.head.children:
+                if child.dep_ == "nsubj":
+                    result = {'Docid_field': context['docid_field'],
+                              'Subject': child.text,
+                              'Subject_Pos': child.pos_,
+                              'Modal': token.text,
+                              'Verb': token.head.text,
+                              'Sent': token.sent}
+                    results.append(result)
+    return results
 
 
 def pattern3_function(doc, context):
@@ -57,7 +64,13 @@ def pattern3_function(doc, context):
         if token.dep_ == "aux" and token.tag_ == "MD" and token.head.tag_ == "VBN":
             for child in token.head.children:
                 if child.dep_ == "nsubj":
-                    results.append((context["docid_field"], child.text, child.pos_, token.text, token.head.text, token.sent))
+                    result = {'Docid_field': context['docid_field'],
+                              'Subject': child.text,
+                              'Subject_Pos': child.pos_,
+                              'Modal': token.text,
+                              'Verb': token.head.text,
+                              'Sent': token.sent}
+                    results.append(result)
     return results
 
 
@@ -71,7 +84,13 @@ def pattern4_function(doc, context):
                         if c.dep_ == "auxpass" and c.tag_ == "VB":
                             for d in token.children:
                                 if d.dep_ == "nsubjpass":
-                                    results.append((context["docid_field"], d.text, d.pos_, child.text, token.text, token.sent))
+                                    result = {'Docid_field': context['docid_field'],
+                                              'Subject': d.text,
+                                              'Subject_Pos': d.pos_,
+                                              'Modal': child.text,
+                                              'Verb': token.text,
+                                              'Sent': token.sent}
+                                    results.append(result)
     return results
 
 
@@ -85,11 +104,16 @@ def pattern5_function(doc, context):
                         if c.dep_ == "auxpass" and c.tag_ == "VBN":
                             for d in token.children:
                                 if d.dep_ == "nsubjpass":
-                                    results.append((context["docid_field"], d.text, d.pos_, child.text, token.text, token.sent))
+                                    result = {'Docid_field': context['docid_field'],
+                                              'Subject': d.text,
+                                              'Subject_Pos': d.pos_,
+                                              'Modal': child.text,
+                                              'Verb': token.text,
+                                              'Sent': token.sent}
+                                    results.append(result)
     return results
 
 
-# Define other pattern functions (pattern2_function, pattern3_function, pattern4_function, pattern5_function) here.
 
 def main():
     meta, text = load_data()
@@ -139,7 +163,7 @@ main_model = bmb.Model("Modal_C ~ 0 + Subject_Pos + Pattern_Type + Verb_C + (1|N
 main_model.build()
 
 with main_model.backend.model:
-    idata=pm.sampling_jax.sample_numpyro_nuts(draws= 2500, tune = 100, target_accept = .99, postprocessing_backend = 'gpu')
+    main_model_idata=pm.sampling_jax.sample_numpyro_nuts(draws= 2500, tune = 100, target_accept = .99, postprocessing_backend = 'gpu')
     posterior_predictive = pm.sample_posterior_predictive(trace = main_model_idata, extend_inferencedata=True)
 
 abortion_data = pd.read_csv('abortion_patterns.csv')
@@ -152,7 +176,7 @@ abortion_model = bmb.Model("Modal_C~ 0 + Subject_Pos + Verb_C + Pattern_Type + (
 
 abortion_model.build()
 
-with model.backend.model:
+with abortion_model.backend.model:
     abortion_idata=pm.sampling_jax.sample_numpyro_nuts(draws= 2500, tune = 100, target_accept = .99, postprocessing_backend = 'gpu')
     posterior_predictive = pm.sample_posterior_predictive(trace = abortion_idata, extend_inferencedata=True)
 
@@ -162,7 +186,7 @@ loo_patterns = az.loo(main_model_idata, pointwise = True).pareto_k
 
 
 axes = az.plot_density(
-    [main_model, abortion_model], 
+    [main_model_idata, abortion_idata], 
     data_labels=["Complete Dataset", "Abortion Dataset"],
     var_names=["1|Native_language"], 
     hdi_prob=0.89,

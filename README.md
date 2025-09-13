@@ -1,5 +1,82 @@
-# Grammar-Research-with-Spacy
-Greetings All, I am not a NLP expert but a researcher working on NLP/Corpus studies. 
-I particularly explore grammar in learner English. Here you can find all the codes and data (if not copyrighted) corresponding to my studies.
-Feel free to use and comment. 
-Fatih Ünal Bozdağ - fbozdag1989@gmail.com
+# Grammar Research with spaCy
+
+## Overview
+This repository contains a collection of NLP research projects focusing on grammar analysis in learner English using spaCy and other advanced NLP tools. Each project is organized as a separate module with its own documentation and requirements.
+
+## Research Focus
+I am a researcher working on NLP/Corpus studies, particularly exploring grammar patterns in learner English. This repository contains all the codes and data (where not copyrighted) corresponding to my published and ongoing studies.
+
+## Projects
+
+### 🔗 [Dative Alternation Analysis](./dative-alternation-analysis/)
+**Probabilistic Analysis of English Dative Constructions in Academic Writings of English EFL Learners**
+- Analyzes double object vs. prepositional dative constructions
+- Published in Theory and Practice of Second Language Acquisition (January 2024)
+- Uses spaCy for linguistic annotation and statistical analysis
+
+### 🔗 [Modal Patterns Analysis](./modal-patterns-analysis/)
+**Bayesian Analysis of Modal Verb Patterns in Learner English**
+- Extracts five different modal verb construction patterns
+- Uses Bayesian statistical modeling with Bambi and PyMC
+- Includes cross-linguistic comparison analysis
+
+### 🔗 [Frame Semantic Tagging](./frame-semantic-tagging/)
+**Automatic Frame Semantic Analysis for Target Lemmas**
+- Uses Frame Semantic Transformer for automatic frame detection
+- Extracts frame elements and semantic roles
+- Processes bulk text data efficiently
+
+### 🔗 [Topic Modeling and Lexical Representation](./topic-modeling-lexical-representation/)
+**BERTopic and Word2Vec Analysis of Learner English Topics**
+- Combines BERTopic for topic discovery with Word2Vec for lexical analysis
+- Optional ChatGPT integration for topic representation
+- Creates semantic networks and entropy analysis
+
+## Getting Started
+
+Each project is self-contained with:
+- 📁 **main.py**: Core analysis script
+- 📄 **README.md**: Detailed project documentation
+- 📋 **requirements.txt**: Python dependencies
+- 📊 **sample_data.csv**: Example data format
+
+### Installation
+```bash
+# Clone the repository
+git clone https://github.com/yourusername/Grammar-Research-with-Spacy.git
+cd Grammar-Research-with-Spacy
+
+# Install dependencies for a specific project
+cd dative-alternation-analysis
+pip install -r requirements.txt
+python -m spacy download en_core_web_trf
+```
+
+## Research Applications
+These tools are designed for:
+- Corpus linguistics research
+- Second language acquisition studies
+- Grammar pattern analysis in learner corpora
+- Cross-linguistic comparison studies
+- Educational technology applications
+
+## Dependencies
+Each project has its own requirements, but common dependencies include:
+- **spaCy**: Natural language processing
+- **pandas**: Data manipulation
+- **numpy**: Numerical computations
+- **matplotlib/seaborn**: Visualization
+
+## Data Requirements
+- ICLE (International Corpus of Learner English) format preferred
+- CSV files with text and metadata columns
+- GPU recommended for large corpus processing
+
+## Citation
+If you use any of these tools in your research, please cite the corresponding papers and acknowledge this repository.
+
+## Contact
+**Fatih Ünal Bozdağ**  
+📧 fbozdag1989@gmail.com
+
+Feel free to use, modify, and comment on these tools. Contributions and suggestions are welcome!

@@ -6,7 +6,7 @@ import pandas as pd
 import spacy
 nlp = spacy.load("en_core_web_trf")
 
-df = pd.read_csv()
+df = pd.read_csv('your_data_file.csv')  # Replace with your actual data file path
 
 ### you dataframe is supposed have columns including 'sent' and 'lemma' ### 
 

@@ -1,0 +1,4 @@
+torch>=1.12.0
+pandas>=1.5.0
+spacy>=3.4.0
+frame-semantic-transformer>=0.4.0

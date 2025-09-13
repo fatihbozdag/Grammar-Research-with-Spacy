@@ -160,18 +160,18 @@ from gensim.utils import simple_preprocess
 from gensim.utils import simple_preprocess
 from gensim.models import Word2Vec
 
-documents = pd.read_csv('your_topic_modeling_results_file')
+documents = pd.read_csv('your_topic_modeling_results_file.csv')  # Replace with your actual results file
 documents.loc[documents['Topic']== 0, 'Topic'] = 'Common_Topic'
 documents.loc[documents['Topic']!= 'Common_Topic', 'Topic'] = 'Other_Topics'
 topic_counts = documents['Topic'].groupby(documents['Native_Language']).value_counts(sort = True)
 
 ### setseed ###
 def hash(astring):
-  return ord(astring[123]) 
+    return ord(astring[0]) % 123 
   
-  ### A note of caution! Gensim results are randomized, so it is necessary to set seed.###
-  ###However, as I was not aware that 'workers' parameter should have been set to 1 for non-randomness, the order of associated words may slightly vary.
-  ### Our results are as follows; 
+### A note of caution! Gensim results are randomized, so it is necessary to set seed.###
+###However, as I was not aware that 'workers' parameter should have been set to 1 for non-randomness, the order of associated words may slightly vary.
+### Our results are as follows; 
   
 Related words for 'academic':
 background: 0.7666
@@ -231,7 +231,7 @@ attend: 0.5974
 employment: 0.5855
 qualified: 0.5627
 graduate: 0.5260
-level: 0.5200 ####
+level: 0.5200
   
   
 ### Train model ###

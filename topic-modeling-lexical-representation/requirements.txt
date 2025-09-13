@@ -1,0 +1,15 @@
+bertopic>=0.15.0
+umap-learn>=0.5.3
+hdbscan>=0.8.28
+scikit-learn>=1.1.0
+sentence-transformers>=2.2.0
+keybert>=0.7.0
+pandas>=1.5.0
+spacy>=3.4.0
+numpy>=1.21.0
+matplotlib>=3.5.0
+seaborn>=0.11.0
+gensim>=4.2.0
+networkx>=2.8.0
+openai>=0.27.0
+chardet>=5.0.0
