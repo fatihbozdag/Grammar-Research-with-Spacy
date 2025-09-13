@@ -120,6 +120,36 @@ Bozdağ, F. Ü., & Kılımcı, A. (2024). Lexical Complexity and Language Profic
 📅 **Year:** 2024  
 👥 **Co-authored with:** Abdurrahman Kılımcı
 
+---
+
+### Noun Phrase Analysis
+
+If you use the noun phrase analysis code in your research, please cite the following paper:
+
+**Bozdağ FÜ, Mo J, Morris G (2025) A corpus-based analysis of noun modifiers in L2 writing: The respective impact of L2 proficiency and L1 background. PLoS ONE 20(3): e0320092. https://doi.org/10.1371/journal.pone.0320092**
+
+### BibTeX Format
+```bibtex
+@article{bozdag2025corpus,
+  title={A corpus-based analysis of noun modifiers in L2 writing: The respective impact of L2 proficiency and L1 background},
+  author={Bozdağ, Fatih Ünal and Mo, Junhua and Morris, Gareth},
+  journal={PLoS ONE},
+  volume={20},
+  number={3},
+  pages={e0320092},
+  year={2025},
+  publisher={Public Library of Science},
+  doi={10.1371/journal.pone.0320092},
+  url={https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0320092}
+}
+```
+
+### APA Format
+Bozdağ, F. Ü., Mo, J., & Morris, G. (2025). A corpus-based analysis of noun modifiers in L2 writing: The respective impact of L2 proficiency and L1 background. *PLoS ONE*, *20*(3), e0320092. https://doi.org/10.1371/journal.pone.0320092
+
+### Full Article
+📖 **Available at:** https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0320092
+
 ## Repository Citation
 
 If you use this repository or any of its tools, please also cite:

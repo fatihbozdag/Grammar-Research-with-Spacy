@@ -45,6 +45,15 @@ I am a researcher working on NLP/Corpus studies, particularly exploring grammar 
 - Applies LASSO and Random Forest for CEFR level prediction
 - Analyzes cross-linguistic complexity patterns
 
+### 🔗 [Noun Phrase Analysis](./noun-phrase-analysis/)
+**A Corpus-Based Analysis of Noun Modifiers in L2 Writing**
+- **Published:** PLoS ONE (2025)
+- **DOI:** https://doi.org/10.1371/journal.pone.0320092
+- **Co-authored with:** Junhua Mo & Gareth Morris
+- Analyzes 7 types of noun modifiers across CEFR levels
+- Uses Bayesian regression for statistical analysis
+- Examines L1 background influence on noun phrase complexity
+
 ## Getting Started
 
 Each project is self-contained with:
