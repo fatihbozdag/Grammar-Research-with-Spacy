@@ -114,6 +114,12 @@ If you use the lexical complexity CEFR analysis code in your research, please ci
 ### APA Format
 Bozdağ, F. Ü., & Kılımcı, A. (2024). Lexical Complexity and Language Proficiency: An Investigation of Indices Across CEFR Levels. In İ. H. Mirici & H. Ergül (Eds.), *Current Academic Reflections on English Language Teaching in an EFL Setting* (pp. [page numbers]). Cambridge Scholars Publishing.
 
+### Full Chapter
+📖 **Published in:** *Current Academic Reflections on English Language Teaching in an EFL Setting*  
+📚 **Publisher:** Cambridge Scholars Publishing  
+📅 **Year:** 2024  
+👥 **Co-authored with:** Abdurrahman Kılımcı
+
 ## Repository Citation
 
 If you use this repository or any of its tools, please also cite:

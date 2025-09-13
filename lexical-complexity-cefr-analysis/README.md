@@ -6,7 +6,15 @@ This project investigates lexical complexity indices across CEFR (Common Europea
 ## Research Context
 This code corresponds to the published book chapter:
 
-**Bozdağ, F. Ü., & Kılımcı, A. (2024). Lexical Complexity and Language Proficiency: An Investigation of Indices Across CEFR Levels. In İ. H. Mirici & H. Ergül (Eds.), *Current Academic Reflections on English Language Teaching in an EFL Setting* (pp. [page numbers]). Cambridge Scholars Publishing.**
+**Bozdağ, F. Ü., & Kılımcı, A. (2024). Lexical Complexity and Language Proficiency: An Investigation of Indices Across CEFR Levels. In İ. H. Mirici & H. Ergül (Eds.), *Current Academic Reflections on English Language Teaching in an EFL Setting*. Cambridge Scholars Publishing.**
+
+### Citation Details
+- **Title:** Lexical Complexity and Language Proficiency: An Investigation of Indices Across CEFR Levels
+- **Authors:** Fatih Ünal Bozdağ & Abdurrahman Kılımcı
+- **Book:** Current Academic Reflections on English Language Teaching in an EFL Setting
+- **Editors:** İsmail Hakkı Mirici & Hatice Ergül
+- **Publisher:** Cambridge Scholars Publishing
+- **Year:** 2024
 
 ## Features
 - **LFTK Integration**: Extracts 76+ lexical complexity features using the Lexical Features Toolkit
