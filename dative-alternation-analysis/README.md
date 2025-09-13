@@ -4,7 +4,11 @@
 This project analyzes English dative constructions in academic writings of English EFL learners using spaCy for natural language processing. The analysis focuses on probabilistic patterns of dative alternation between double object constructions and prepositional dative constructions.
 
 ## Research Context
-This code corresponds to the accepted paper titled "Probabilistic Analysis of English Dative Constructions in Academic Writings of English EFL Learners" published in Theory and Practice of Second Language Acquisition (January 2024).
+This code corresponds to the published paper:
+
+**Bozdağ, F. Ünal. (2024). Probabilistic Analysis of English Dative Constructions in Academic Writings of English EFL Learners. *Theory and Practice of Second Language Acquisition*, *10*(1), 1–24. https://doi.org/10.31261/TAPSLA.13902**
+
+📖 **Full article available at:** https://journals.us.edu.pl/index.php/TAPSLA/article/view/13902
 
 ## Features
 - **Double Object Dative Analysis**: Extracts patterns like "give someone something"

@@ -11,7 +11,8 @@ I am a researcher working on NLP/Corpus studies, particularly exploring grammar 
 ### 🔗 [Dative Alternation Analysis](./dative-alternation-analysis/)
 **Probabilistic Analysis of English Dative Constructions in Academic Writings of English EFL Learners**
 - Analyzes double object vs. prepositional dative constructions
-- Published in Theory and Practice of Second Language Acquisition (January 2024)
+- **Published:** *Theory and Practice of Second Language Acquisition*, 10(1), 1–24 (2024)
+- **DOI:** https://doi.org/10.31261/TAPSLA.13902
 - Uses spaCy for linguistic annotation and statistical analysis
 
 ### 🔗 [Modal Patterns Analysis](./modal-patterns-analysis/)
