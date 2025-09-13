@@ -91,6 +91,29 @@ Bozdağ, F. Ü. (2025). Cognitive Patterns in Learner Texts: Exploring Semantic 
 ### Full Chapter
 📖 **Available at:** https://www.igi-global.com/gateway/chapter/370696
 
+---
+
+### Lexical Complexity CEFR Analysis
+
+If you use the lexical complexity CEFR analysis code in your research, please cite the following book chapter:
+
+**Bozdağ, F. Ü., & Kılımcı, A. (2024). Lexical Complexity and Language Proficiency: An Investigation of Indices Across CEFR Levels. In İ. H. Mirici & H. Ergül (Eds.), *Current Academic Reflections on English Language Teaching in an EFL Setting* (pp. [page numbers]). Cambridge Scholars Publishing.**
+
+### BibTeX Format
+```bibtex
+@incollection{bozdag2024lexical,
+  title={Lexical Complexity and Language Proficiency: An Investigation of Indices Across CEFR Levels},
+  author={Bozdağ, Fatih Ünal and Kılımcı, Abdurrahman},
+  booktitle={Current Academic Reflections on English Language Teaching in an EFL Setting},
+  editor={Mirici, İsmail Hakkı and Ergül, Hatice},
+  publisher={Cambridge Scholars Publishing},
+  year={2024}
+}
+```
+
+### APA Format
+Bozdağ, F. Ü., & Kılımcı, A. (2024). Lexical Complexity and Language Proficiency: An Investigation of Indices Across CEFR Levels. In İ. H. Mirici & H. Ergül (Eds.), *Current Academic Reflections on English Language Teaching in an EFL Setting* (pp. [page numbers]). Cambridge Scholars Publishing.
+
 ## Repository Citation
 
 If you use this repository or any of its tools, please also cite:

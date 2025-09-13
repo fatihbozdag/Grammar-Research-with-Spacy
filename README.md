@@ -37,6 +37,14 @@ I am a researcher working on NLP/Corpus studies, particularly exploring grammar 
 - Optional ChatGPT integration for topic representation
 - Creates semantic networks and entropy analysis
 
+### 🔗 [Lexical Complexity CEFR Analysis](./lexical-complexity-cefr-analysis/)
+**Lexical Complexity and Language Proficiency: An Investigation of Indices Across CEFR Levels**
+- **Published:** Cambridge Scholars Publishing (2024)
+- **Co-authored with:** Abdurrahman Kılımcı
+- Uses LFTK for lexical complexity feature extraction
+- Applies LASSO and Random Forest for CEFR level prediction
+- Analyzes cross-linguistic complexity patterns
+
 ## Getting Started
 
 Each project is self-contained with:
